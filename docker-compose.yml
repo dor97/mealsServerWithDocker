@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  meals:
+    build: 
+      context: ./meals
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - type: bind
+        source: ./meals
+        target: /meals
+    environment:
+      FLASK_DEBUG: "true"
+    ports:
+      - "5001:80"
+    depends_on:
+      - mongo
+    expose:
+      - 80
+
+  diets:
+    build:
+      context: ./diets
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - type: bind
+        source: ./diets
+        target: /diets
+    environment:
+      FLASK_DEBUG: "true"
+    ports:
+      - "5002:80"
+    depends_on:
+      - mongo
+    expose:
+      - 80
+
+  reverse:
+    build: ./reverse
+    ports:
+      - "80:80"
+    depends_on:
+      - meals
+      - diets
+  mongo:
+    image: mongo
+    # environment:
+    #  MONGO_INITDB_ROOT_USERNAME: root
+    #  MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
